@@ -12,7 +12,7 @@
 
 namespace nd4j {
 
-    template<typename T> class NDArray;
+    template<typename T> class ND4J_EXPORT NDArray;
     template<typename T> NDArray<T> operator+(const T, const NDArray<T>&);
     // template<typename T> NDArray<T> operator-(const T, const NDArray<T>&);
     template<typename T> NDArray<T> mmul(const NDArray<T>&, const NDArray<T>&);
