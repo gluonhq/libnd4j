@@ -261,6 +261,10 @@ if [ -z "$COMPUTE" ]; then
  COMPUTE="all"
 fi
 
+if [ "$CHIP" == "cpu-avx512" ]; then
+    ARCH="skylake-avx512"
+fi
+
 if [ -z "$ARCH" ]; then
  ARCH="x86-64"
 fi
@@ -269,7 +273,7 @@ if [ -z "$EXPERIMENTAL" ]; then
  EXPERIMENTAL="no"
 fi
 
-if [ "$CHIP" == "cpu" ]; then
+if [[ $CHIP == cpu* ]]; then
   BLAS_ARG="-DCPU_BLAS=true -DBLAS=TRUE"
   else
        BLAS_ARG="-DCUDA_BLAS=true -DBLAS=TRUE"
