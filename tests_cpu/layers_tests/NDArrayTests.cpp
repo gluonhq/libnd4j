@@ -2168,7 +2168,7 @@ TEST_F(NDArrayTest, Operator_Divide_Test_1)
     NDArray<double> result = x / y;
 
     ASSERT_TRUE(expected.isSameShape(&result));
-    ASSERT_TRUE(expected.equalsTo(&result));
+    ASSERT_TRUE(expected.equalsTo(&result,1e-4));
 }
 
 

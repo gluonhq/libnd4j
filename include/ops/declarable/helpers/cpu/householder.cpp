@@ -79,14 +79,14 @@ NDArray<T> evalHouseholderMatrix(const NDArray<T>& x) {
 		
 		T u0 = x(0) - normX;
 		coeff = -u0 / normX;				
-		w = x / u0;			
+		w.assign(x / u0);
 	}
 
-	w(0) = 1;
-	wT.assign(&w);
+	w(0) = (T)1.;
+	wT.assign(w);
 
 	NDArray<T> identity((int)x.lengthOf(), (int)x.lengthOf(), x.ordering(), x.getWorkspace());					 
-	identity.setIdentity();																			// identity matrix
+	identity.setIdentity();																			// identity matrix	
 
 	return (identity - mmul(w, wT) * coeff);
 }
