@@ -46,7 +46,15 @@ namespace helpers {
     */                  	
     template <typename T>
     NDArray<T> evalHouseholderMatrix(const NDArray<T>& x);
+
     
+    /**
+    *  this function reduce given matrix to  upper bidiagonal form (in-place operation), matrix must satisfy following condition rows >= cols
+    * 
+    *  matrix - input 2D matrix to be reduced to upper bidiagonal from
+    */
+    template <typename T>
+    void biDiagonalizeUp(NDArray<T>& matrix);
     
 
 }
