@@ -2662,17 +2662,15 @@ namespace simdOps {
         	T eps = extraParamsRef[2];
     	    T diff = nd4j::math::nd4j_abs(d1 - d2);
     	
+    		// works well except in the range of very large numbers
     		if (diff <= eps)
     	    	return (T)0.;    	    
 
-    	    // in case of large numbers use relative error, take a note - dividing be zero is excluded by previous "if" condition
-		    if (diff / nd4j::math::nd4j_max(nd4j::math::nd4j_abs(d1), nd4j::math::nd4j_abs(d2)) <= eps)
+    	    // Knuth approach
+    	    // works well except in the range of very small numbers
+		    if (diff <= nd4j::math::nd4j_max(nd4j::math::nd4j_abs(d1), nd4j::math::nd4j_abs(d2)) * eps)
 		    	return (T)0.;
         
- 			// Knuth approach
- 			// if(diff <= (nd4j::math::nd4j_abs(d1) > nd4j::math::nd4j_abs(d2) ? nd4j::math::nd4j_abs(d1) : nd4j::math::nd4j_abs(d2)) * nd4j::DataTypeUtils::eps<T>())
- 			// 	return (T)0.;        		
-
         	return (T)1.;
         }
 
