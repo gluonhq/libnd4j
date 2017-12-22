@@ -12,6 +12,12 @@ namespace nd4j {
 
             auto axis = INT_ARG(0);
 
+            if (axis < 0)
+                axis += input->rankOf() + 1;
+
+
+            REQUIRE_TRUE(axis >= 0 && axis <= input->rankOf()+1, 0, "ExpandDims: axis should be in range of 0...%i in this case, but got %i instead", input->rankOf() + 1, axis);
+
             std::vector<int> shape;
             for(int e = 0; e < input->rankOf(); e++)
                 shape.emplace_back(input->sizeAt(e));
@@ -34,6 +40,9 @@ namespace nd4j {
             char order = shape::order(inShape);
 
             auto axis = INT_ARG(0);
+
+            if (axis < 0)
+                axis += x_rank + 1;
 
             int* newShape;
             ALLOCATE(newShape, block.getWorkspace(), shape::shapeInfoLength(x_rank+1), int);
