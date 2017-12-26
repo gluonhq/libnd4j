@@ -36,17 +36,46 @@ TEST_F(JavaInteropTests, TestShapeExposure1) {
 
     auto shapeList = nativeOps.calculateOutputShapesFloat(nullptr, op.getOpHash(), ptrs, 2, tArgs.data(), tArgs.size(), iArgs.data(), iArgs.size());
 
-    //ASSERT_EQ(1, shapeList->size());
+    ASSERT_EQ(1, shapeList->size());
 
-    ASSERT_EQ(exp.rankOf(), shape::rank((int *)shapeList[0]));
-    ASSERT_EQ(exp.sizeAt(0), shape::shapeOf((int *)shapeList[0])[0]);
-    ASSERT_EQ(exp.sizeAt(1), shape::shapeOf((int *)shapeList[0])[1]);
-    ASSERT_EQ(exp.sizeAt(2), shape::shapeOf((int *)shapeList[0])[2]);
-    ASSERT_EQ(exp.sizeAt(3), shape::shapeOf((int *)shapeList[0])[3]);
+    ASSERT_EQ(exp.rankOf(), shape::rank((int *)shapeList->at(0)));
+    ASSERT_EQ(exp.sizeAt(0), shape::shapeOf((int *)shapeList->at(0))[0]);
+    ASSERT_EQ(exp.sizeAt(1), shape::shapeOf((int *)shapeList->at(0))[1]);
+    ASSERT_EQ(exp.sizeAt(2), shape::shapeOf((int *)shapeList->at(0))[2]);
+    ASSERT_EQ(exp.sizeAt(3), shape::shapeOf((int *)shapeList->at(0))[3]);
 
-    int *ptr = (int *) shapeList[0];
-    delete[] ptr;
-    delete[] shapeList;
+    //int *ptr = (int *) shapeList[0];
+    //delete[] ptr;
+    //delete shapeList;
+
+    nativeOps.deleteShapeList((Nd4jPointer) shapeList);
+}
+
+
+TEST_F(JavaInteropTests, TestShapeExposure2) {
+    NDArray<float> input('c', {1, 2, 5, 4});
+    NDArray<float> exp('c', {1, 4}, {1, 2, 5, 4});
+
+
+    NativeOps nativeOps;
+
+    nd4j::ops::shape_of<float> op;
+
+    std::vector<float> tArgs({});
+    std::vector<int> iArgs({});
+
+
+    Nd4jPointer ptrs[] = {(Nd4jPointer) input.getShapeInfo()};
+
+    auto shapeList = nativeOps.calculateOutputShapesFloat(nullptr, op.getOpHash(), ptrs, 1, tArgs.data(), tArgs.size(), iArgs.data(), iArgs.size());
+
+    ASSERT_EQ(1, shapeList->size());
+
+    ASSERT_EQ(exp.rankOf(), shape::rank((int *)shapeList->at(0)));
+    ASSERT_EQ(exp.sizeAt(0), shape::shapeOf((int *)shapeList->at(0))[0]);
+    ASSERT_EQ(exp.sizeAt(1), shape::shapeOf((int *)shapeList->at(0))[1]);
+
+    nativeOps.deleteShapeList((Nd4jPointer) shapeList);
 }
 
 

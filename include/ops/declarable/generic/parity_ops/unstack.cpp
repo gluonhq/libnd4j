@@ -23,8 +23,12 @@ namespace nd4j {
                     dims.emplace_back(e);
 
             auto tads = NDArrayFactory<T>::allTensorsAlongDimension(input, dims);
+            //nd4j_printf("Tad size: %d\n",tads->size());
             for (int e = 0; e < tads->size(); e++) {
+                //nd4j_printf("Calling assign at index %d\n",e);
                 auto outE = OUTPUT_VARIABLE(e);
+                auto tadAtE = tads->at(e);
+
                 outE->assign(tads->at(e));
 
                 this->storeResult(block, e, *outE);
@@ -51,12 +55,14 @@ namespace nd4j {
             shape::TAD tad(inShape, dims.data(), (int) dims.size());
             tad.createTadOnlyShapeInfo();
             Nd4jIndex numTads = shape::length(inShape) / shape::tadLength(inShape, dims.data(), (int) dims.size());
-
             auto result = new ShapeList();
             for (int e = 0; e < numTads; e++) {
                 int *newShape;
                 ALLOCATE(newShape, block.getWorkspace(), shape::shapeInfoLength(tad.tadOnlyShapeInfo), int);
-                memcpy(newShape, tad.tadOnlyShapeInfo, shape::shapeInfoByteLength(tad.tadOnlyShapeInfo));
+                if (shape::order(inShape) == 'c')
+                    shape::shapeBuffer(shape::rank(tad.tadOnlyShapeInfo), shape::shapeOf(tad.tadOnlyShapeInfo), newShape);
+                else
+                    shape::shapeBufferFortran(shape::rank(tad.tadOnlyShapeInfo), shape::shapeOf(tad.tadOnlyShapeInfo), newShape);
                 result->push_back(newShape);
             }
 

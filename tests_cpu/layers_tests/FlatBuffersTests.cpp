@@ -23,8 +23,8 @@ public:
     int *fShape = new int[8]{2, 2, 2, 1, 2, 0, 1, 102};
 
     FlatBuffersTest() {
-        //Environment::getInstance()->setDebug(true);
-        //Environment::getInstance()->setVerbose(true);
+        Environment::getInstance()->setDebug(false);
+        Environment::getInstance()->setVerbose(false);
     }
 
     ~FlatBuffersTest() {
@@ -576,16 +576,23 @@ TEST_F(FlatBuffersTest, Ae_00) {
 TEST_F(FlatBuffersTest, expand_dims) {
     nd4j::ops::rank<float> op1;
 
+    NDArray<float> exp('c', {3, 1, 4}, {-0.136331f, -0.608995f, 0.361580f, -0.082446f, 0.843615f, 0.755323f, 1.083639f, 1.629809f, 0.749157f, 2.765640f, -0.521926f, 1.402359f});
+
     auto graph = GraphExecutioner<float>::importFromFlatBuffers("./resources/expand_dim.fb");
 
     graph->printOut();
 
     auto result = GraphExecutioner<float>::execute(graph);
     ASSERT_EQ(ND4J_STATUS_OK, result);
+    ASSERT_TRUE(graph->getVariableSpace()->hasVariable(5));
+
+    auto z = graph->getVariableSpace()->getVariable(5)->getNDArray();
+
+    ASSERT_TRUE(exp.isSameShape(z));
+    ASSERT_TRUE(exp.equalsTo(z));
 
     delete graph;
 }
-
 
 TEST_F(FlatBuffersTest, transpose) {
     nd4j::ops::rank<float> op1;
@@ -596,6 +603,38 @@ TEST_F(FlatBuffersTest, transpose) {
 
     //auto result = GraphExecutioner<float>::execute(graph);
     //ASSERT_EQ(ND4J_STATUS_OK, result);
+
+    delete graph;
+}
+
+
+
+TEST_F(FlatBuffersTest, nhwc_conv_0) {
+    nd4j::ops::rank<float> op1;
+
+    NDArray<float> exp('c', {4, 2}, {2.958640f, 0.602521f, 7.571267f, 1.496686f, -2.292647f, -1.791460f, 13.055838f, 4.278642f});
+
+    auto graph = GraphExecutioner<float>::importFromFlatBuffers("./resources/conv_0.fb");
+
+    graph->printOut();
+
+    auto result = GraphExecutioner<float>::execute(graph);
+    ASSERT_EQ(ND4J_STATUS_OK, result);
+
+    ASSERT_TRUE(graph->getVariableSpace()->hasVariable(11));
+
+    auto z = graph->getVariableSpace()->getVariable(11)->getNDArray();
+
+    //z->printShapeInfo("z buffr");
+    //z->printIndexedBuffer("z shape");
+/*
+    [[2.96,  0.60],
+    [7.57,  1.50],
+    [-2.29,  -1.79],
+    [13.06,  4.28]]
+*/
+    ASSERT_TRUE(exp.isSameShape(z));
+    ASSERT_TRUE(exp.equalsTo(z));
 
     delete graph;
 }
