@@ -64,7 +64,8 @@ TEST_F(HelpersTests1, evalHouseholderMatrix_test1) {
     NDArray<double> x('c', {1,4}, {14,17,3,1});            
     NDArray<double> pExp('c', {4,4}, {-0.629253, -0.764093,   -0.13484, -0.0449467, -0.764093,  0.641653, -0.0632377, -0.0210792, -0.13484,-0.0632377,    0.98884,-0.00371987, -0.0449467,-0.0210792,-0.00371987,  0.99876});
 
-    NDArray<double> result = ops::helpers::evalHouseholderMatrix(x);
+    double normX;
+    NDArray<double> result = ops::helpers::evalHouseholderMatrix(x, normX);
 
     ASSERT_TRUE(result.isSameShapeStrict(&pExp));
     ASSERT_TRUE(result.equalsTo(&pExp));
@@ -74,17 +75,12 @@ TEST_F(HelpersTests1, evalHouseholderMatrix_test1) {
 TEST_F(HelpersTests1, biDiagonalizeUp_test1) {
             
     NDArray<double> matrix('c', {4,4}, {9,13,3,6,13,11,7,6,3,7,4,7,6,6,7,10});            
-    NDArray<double> pExp('c', {4,4}, {-0.629253, -0.764093,   -0.13484, -0.0449467, -0.764093,  0.641653, -0.0632377, -0.0210792, -0.13484,-0.0632377,    0.98884,-0.00371987, -0.0449467,-0.0210792,-0.00371987,  0.99876});
-
+    NDArray<double> pExp('c', {4,4}, {-17.1756,  24.3869, 0, 0, 0, -8.61985, -3.89823, 0, 0, 0,  4.03047, 4.13018,0,0,0, 1.21666});
+    
     ops::helpers::biDiagonalizeUp(matrix);
-    // matrix.printBuffer();
-    for(int i=0; i<matrix.lengthOf(); ++i) {
-        std::cout<<std::setw(15)<<matrix(i)<<" ";
-        if((i+1)%matrix.sizeAt(1)==0)
-            std::cout<<std::endl;
-    }
-
-    ASSERT_TRUE(1);
-    // ASSERT_TRUE(result.isSameShapeStrict(&pExp));
-    // ASSERT_TRUE(result.equalsTo(&pExp));
+    matrix.printBuffer();
+    
+    ASSERT_TRUE(matrix.isSameShapeStrict(&pExp));
+    ASSERT_TRUE(matrix.equalsTo(&pExp));
 }
+
