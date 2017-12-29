@@ -65,7 +65,7 @@ NDArray<T> Householder<T>::evalHHmatrix(NDArray<T>& x, T& coeff, T& normX) {
 
 	normX = x.template reduceNumber<simdOps::Norm2<T>>();	
 	const T min = DataTypeUtils::min<T>();	
-
+	
 	if(x.isScalar() || normX*normX - x(0)*x(0) <= min) {
 
 		coeff = (T)0.;
@@ -88,15 +88,23 @@ NDArray<T> Householder<T>::evalHHmatrix(NDArray<T>& x, T& coeff, T& normX) {
 	identity.setIdentity();																			// identity matrix	
 		
 	NDArray<T>* xT = x.transpose();
-	NDArray<T> pRow(nullptr), pCol(nullptr);
-	if(x.isRowVector)
+	NDArray<T> *pRow(nullptr), *pCol(nullptr);
+	
+	if(x.isRowVector()) {
+		
 		pRow = &x;
 		pCol = xT;
-
+	}
+	else {
 	
-	NDArray<T> result = 
+		pRow = xT;
+		pCol = &x;	
+	}
+
+	NDArray<T> result = identity - mmul(*pCol, *pRow) * coeff;	
 	delete xT;
-	return (identity - mmul(w, wT) * coeff);
+	
+	return result;
 }
 
 

@@ -50,13 +50,17 @@ TEST_F(HelpersTests1, evalHHmatrix_test2) {
 ///////////////////////////////////////////////////////////////////
 TEST_F(HelpersTests1, BiDiagonalizeUp_test1) {
             
-    NDArray<double> matrix('c', {4,4}, {9,13,3,6,13,11,7,6,3,7,4,7,6,6,7,10});            
-    NDArray<double> hhMatrixExp('c', {4,4}, {1.524,  1.75682,0.233741,0.289458, 0.496646,   1.5655, 1.02929,0.971124, 0.114611,-0.451039, 1.06367, 0, 0.229221,-0.272237,0.938237,0,});
+    NDArray<double> matrix('c', {4,4}, {9,13,3,6,13,11,7,6,3,7,4,7,6,6,7,10});      
+    NDArray<double> hhMatrixExp('c', {4,4}, {1.524,  1.75682,0.233741,0.289458, 0.496646,   1.5655, 1.02929,0.971124, 0.114611,-0.451039, 1.06367, 0, 0.229221,-0.272237,0.938237,0});
+    NDArray<double> hhBidiagExp('c', {4,4}, {-17.1756, 24.3869,       0,      0, 0,-8.61985,-3.89823,      0, 0,       0, 4.03047,4.13018, 0,       0,       0,1.21666});
     
     ops::helpers::BiDiagonalUp<double> object(matrix);    
-    object._HHmatrix.printBuffer();
+    // object._HHmatrix.printBuffer();
+    object._HHbidiag.printBuffer();
 
     ASSERT_TRUE(hhMatrixExp.isSameShapeStrict(&object._HHmatrix));
     ASSERT_TRUE(hhMatrixExp.equalsTo(&object._HHmatrix));
+    ASSERT_TRUE(hhBidiagExp.isSameShapeStrict(&object._HHbidiag));
+    ASSERT_TRUE(hhBidiagExp.equalsTo(&object._HHbidiag));
 }
     

@@ -32,7 +32,7 @@ class Householder {
     *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)
     *  coeff - scalar, scaling factor in Householder matrix formula  
     */                       
-    static NDArray<T> evalHHmatrix(const NDArray<T>& x, T& coeff, T& normX);
+    static NDArray<T> evalHHmatrix(NDArray<T>& x, T& coeff, T& normX);
         
 
 
