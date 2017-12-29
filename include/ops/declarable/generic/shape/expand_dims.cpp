@@ -10,6 +10,11 @@ namespace nd4j {
             auto input = INPUT_VARIABLE(0);
             auto output = OUTPUT_VARIABLE(0);
 
+            if (input->isScalar()) {
+                output->assign(input->getScalar(0));
+                return ND4J_STATUS_OK;
+            }
+
             auto axis = INT_ARG(0);
 
             if (axis < 0)
@@ -35,6 +40,25 @@ namespace nd4j {
         }
         DECLARE_SHAPE_FN(expand_dims) {
             auto inShape = inputShape->at(0);
+
+            // 0D scalar edge case
+            if (shape::rank(inShape) == 0) {
+                int* newShape;
+                ALLOCATE(newShape, block.getWorkspace(), shape::shapeInfoLength(1), int);
+
+                int x = 1;
+                shape::shapeBuffer(1, &x, newShape);
+                return new ShapeList(newShape);
+            }
+
+            // FIXME: temp workaround for TF
+            if (shape::isScalar(inShape)) {
+                int* newShape;
+                ALLOCATE(newShape, block.getWorkspace(), shape::shapeInfoLength(inShape), int);
+
+                shape::shapeBuffer(2, shape::shapeOf(inShape), newShape);
+                return new ShapeList(newShape);
+            }
 
             auto x_rank = shape::rank(inShape);
             char order = shape::order(inShape);

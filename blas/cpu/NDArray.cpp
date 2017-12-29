@@ -154,6 +154,23 @@ template <typename T>
     _isShapeAlloc = true;
 }
 
+template <typename T>
+NDArray<T>::NDArray(T scalar) {
+    nd4j::memory::Workspace* workspace = nullptr;
+
+    ALLOCATE(_buffer, workspace, 1, T);
+    ALLOCATE(_shapeInfo, workspace, shape::shapeInfoLength(0), int);
+    _shapeInfo[0] = 0;
+    _shapeInfo[1] = 0;
+    _shapeInfo[2] = 1;
+    _shapeInfo[3] = 99;
+
+    _buffer[0] = scalar;
+
+    _isBuffAlloc = true; 
+    _isShapeAlloc = true;
+}
+
 ////////////////////////////////////////////////////////////////////////
 // creates new NDArray using shape information from "shapeInfo" array, set all elements in new array to be zeros
 template <typename T>
@@ -2025,6 +2042,12 @@ bool NDArray<T>::isUnitary() {
     ////////////////////////////////////////////////////////////////////////
     template<typename T>
     NDArray<T>* NDArray<T>::subarray(IndicesList& idx) const {
+        // scalar subarray edge case
+        if (idx.isScalar()) {
+            auto pnt = idx.at(0)->getIndices().at(0);
+            return new NDArray<T>('c', {1, 1}, {this->getScalar(pnt)});   
+        }
+
         if (idx.size() != this->rankOf())
             throw "Number of indices should match";
 
@@ -2469,7 +2492,24 @@ NDArray<T> NDArray<T>::operator+(const NDArray<T>& other) const {
         else
             *this = this->template applyTrueBroadcast<simdOps::Add<T>>(other);
     }
+
+
+    template<typename T>
+    void NDArray<T>::operator+=(const T other) {
+        if (this->isScalar())
+            this->_buffer[0] += other;
+        else
+            functions::scalar::ScalarTransform<T>::template transform<simdOps::Add<T>>(this->_buffer, this->_shapeInfo, this->_buffer, this->_shapeInfo, other, nullptr);
+    }
     
+    template<typename T>
+    void NDArray<T>::operator-=(const T other) {  
+        if (this->isScalar())
+            this->_buffer[0] -= other;
+        else  
+            functions::scalar::ScalarTransform<T>::template transform<simdOps::Subtract<T>>(this->_buffer, this->_shapeInfo, this->_buffer, this->_shapeInfo, other, nullptr);
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // subtraction operator array - array
     template<typename T>
