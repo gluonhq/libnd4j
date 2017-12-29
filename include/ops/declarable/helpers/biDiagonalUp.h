@@ -2,8 +2,8 @@
 // Created by Yurii Shyrma on 18.12.2017.
 //
 
-#ifndef LIBND4J_HOUSEHOLDER_H
-#define LIBND4J_HOUSEHOLDER_H
+#ifndef LIBND4J_BIDIAGONALUP_H
+#define LIBND4J_BIDIAGONALUP_H
 
 #include <ops/declarable/helpers/helpers.h>
 #include "NDArray.h"
@@ -14,26 +14,19 @@ namespace helpers {
 
 
 template<typename T>
-class Householder {
+class BiDiagonalUp {
 
     public:
         
-    /**
-    *  this function calculates Householder matrix P = identity_matrix - coeff * w * w^T
-    *  P * x = [normX, 0, 0 , 0, ...]
-    *  coeff - scalar    
-    *  w = [1, w1, w2, w3, ...]
-    *  w = u / u0
-    *  u = x - |x|*e0
-    *  u0 = x0 - |x| 
-    *  e0 = [1, 0, 0 , 0, ...]
-    * 
-    *  x - input vector, remains unaffected
-    *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)
-    *  coeff - scalar, scaling factor in Householder matrix formula  
-    */                       
-    static NDArray<T> evalHHmatrix(const NDArray<T>& x, T& coeff, T& normX);
-        
+        NDArray<T> _HHmatrix;              // 2D Householder matrix 
+        NDArray<T> _HHbidiag;              // vector which contains Householder coefficients        
+
+        /**
+        *  constructor
+        */
+        BiDiagonalUp(const NDArray<T>& matrix);
+
+        void evalData();
 
 
 };
@@ -71,7 +64,7 @@ class Householder {
     // *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)
     // */                  	
     // template <typename T>
-    // NDArray<T> evalHHmatrix(const NDArray<T>& x, T& normX);
+    // NDArray<T> evalHouseholderMatrix(const NDArray<T>& x, T& normX);
 
     
     // /**
@@ -103,4 +96,4 @@ class Householder {
 }
 
 
-#endif //LIBND4J_HOUSEHOLDER_H
+#endif //LIBND4J_BIDIAGONALUP_H
