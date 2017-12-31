@@ -55,7 +55,7 @@ TEST_F(HelpersTests1, BiDiagonalizeUp_test1) {
     NDArray<double> hhBidiagExp('c', {4,4}, {-17.1756, 24.3869,       0,      0, 0,-8.61985,-3.89823,      0, 0,       0, 4.03047,4.13018, 0,       0,       0,1.21666});
     
     ops::helpers::BiDiagonalUp<double> object(matrix);    
-    // object._HHmatrix.printBuffer();
+    object._HHmatrix.printBuffer();
     object._HHbidiag.printBuffer();
 
     ASSERT_TRUE(hhMatrixExp.isSameShapeStrict(&object._HHmatrix));
@@ -64,3 +64,23 @@ TEST_F(HelpersTests1, BiDiagonalizeUp_test1) {
     ASSERT_TRUE(hhBidiagExp.equalsTo(&object._HHbidiag));
 }
     
+///////////////////////////////////////////////////////////////////
+TEST_F(HelpersTests1, BiDiagonalizeUp_test2) {
+            
+    NDArray<double> matrix('c', {5,4}, {9,13,3,6, 13,11,7,6, 3,7,4,7, 6,6,7,10, 2,17,9,12});      
+    NDArray<double> hhMatrixExp('c', {5,4}, {1.52048,  1.75616, 0.233075, 0.290731, 0.494454,  1.27951,  1.08854,-0.915049, 0.114105,-0.211925, 1.31566,        0,  0.22821, -0.114834, 0.693077,  1.30484, 0.0760699,-0.710633,-0.199493, 0.729897});
+                                            [1.520483, 1.756160,0.233075, 0.290731, 0.494454, 1.279510, 1.088545,-0.915049, 0.114105,-0.211925, 1.315657, 0.000000, 0.228210,-0.114834, 0.693077, 0.000000, 0.076070, -0.710633,-0.199493, 2.924598]
+    NDArray<double> hhBidiagExp('c', {4,4}, {-17.2916,26.8447,       0,       0, 0,  -21.5,  1.9962,       0, 0,      0,-4.84799,-3.63284, 0,      0,       0,-3.07076});
+    
+    ops::helpers::BiDiagonalUp<double> object(matrix);    
+    object._HHmatrix.printBuffer();
+    // object._HHbidiag.printBuffer();
+
+    ASSERT_TRUE(hhMatrixExp.isSameShapeStrict(&object._HHmatrix));
+    ASSERT_TRUE(hhMatrixExp.equalsTo(&object._HHmatrix));
+    // ASSERT_TRUE(hhBidiagExp.isSameShapeStrict(&object._HHbidiag));
+    // ASSERT_TRUE(hhBidiagExp.equalsTo(&object._HHbidiag));
+}
+    
+
+  

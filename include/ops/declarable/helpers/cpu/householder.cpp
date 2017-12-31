@@ -58,20 +58,26 @@ NDArray<T> Householder<T>::evalHHmatrix(NDArray<T>& x, T& coeff, T& normX) {
 	if(!x.isVector() && !x.isScalar())
 		throw "ops::helpers::evalHHmatrix function: input array must be vector or scalar!";
 
-	
-
 	// NDArray<T> w((int)x.lengthOf(), 1,  x.ordering(), x.getWorkspace());							// column-vector
 	// NDArray<T> wT(1, (int)x.lengthOf(), x.ordering(), x.getWorkspace());							// row-vector (transposed w)	
 
 	normX = x.template reduceNumber<simdOps::Norm2<T>>();	
 	const T min = DataTypeUtils::min<T>();	
 	
-	if(x.isScalar() || normX*normX - x(0)*x(0) <= min) {
+	if (x.isScalar()) {
+		
+		NDArray<T> result(1, 1, x.ordering(), x.getWorkspace());
+		result(0) = (T)1. - coeff;	
+
+		return result;
+	}
+	else if(normX*normX - x(0)*x(0) <= min) {
 
 		coeff = (T)0.;
 		normX = x(0); 
 		x.assign((T)0.);
-	}
+		
+	} 	
 	else {
 		
 		if(x(0) >= (T)0.)

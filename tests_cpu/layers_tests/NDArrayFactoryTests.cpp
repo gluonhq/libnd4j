@@ -199,6 +199,26 @@ TEST_F(NDArrayFactoryTests, Test_Concat_1) {
 ////////////////////////////////////////////////////////////////////
 // TEST_F(NDArrayFactoryTests, mmulHelper_test_8) {
 
+//     NDArray<double> x('c', {2, 2}, {-0.063666, -0.997971, -0.997971,  0.063666});
+//     NDArray<double> y('c', {2, 2}, {1, -1.477147, 1, -4.044343,});
+//     // NDArray<double> y('c', {2, 1}, {-1.477147, -4.044343});
+//     NDArray<double>* pY = y.subarray({{0, 2}, {1, 2}});    
+
+//     NDArray<double> result('c', {2, 1}, {0, 0});
+
+//     NDArray<double> exp('c', {2, 1}, {4.130181, 1.216663});
+                                      
+//     NDArrayFactory<double>::mmulHelper(&x, pY, &result, 1., 0.);
+//     result.printBuffer();
+
+//     ASSERT_TRUE(exp.equalsTo(&result));        
+//     delete pY;
+// }
+
+
+////////////////////////////////////////////////////////////////////
+// TEST_F(NDArrayFactoryTests, mmulHelper_test_9) {
+
 //     NDArray<double> x('c', {4, 4}, {1.524000, 1.756820, 0.233741, 0.289458, 
 //                                     0.496646, 1.565497, 0.114189, 3.896555, 
 //                                     0.114611, -0.451039, 1.484030, 0.213225, 
@@ -223,3 +243,4 @@ TEST_F(NDArrayFactoryTests, Test_Concat_1) {
 //     ASSERT_TRUE(exp.equalsTo(&x));    
     
 // }
+
