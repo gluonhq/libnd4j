@@ -711,6 +711,12 @@ namespace nd4j {
         */
         void operator+=(const NDArray<T>& other);
 
+        /**
+        *  subtraction unary operator array -= other
+        *  other - input array to add
+        */
+        void operator-=(const NDArray<T>& other);
+
         void operator+=(const T other);
         void operator-=(const T other);
         

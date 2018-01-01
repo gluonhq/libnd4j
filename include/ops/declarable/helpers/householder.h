@@ -19,7 +19,7 @@ class Householder {
     public:
         
     /**
-    *  this function calculates Householder matrix P = identity_matrix - coeff * w * w^T
+    *  this method calculates Householder matrix P = identity_matrix - coeff * w * w^T
     *  P * x = [normX, 0, 0 , 0, ...]
     *  coeff - scalar    
     *  w = [1, w1, w2, w3, ...]
@@ -29,49 +29,47 @@ class Householder {
     *  e0 = [1, 0, 0 , 0, ...]
     * 
     *  x - input vector, remains unaffected
+    */                       
+    static NDArray<T> evalHHmatrix(const NDArray<T>& x);
+
+    /**
+    *  this method evaluates data required for calculation of Householder matrix P = identity_matrix - coeff * w * w^T
+    *  P * x = [normX, 0, 0 , 0, ...]
+    *  coeff - scalar    
+    *  w = [1, w1, w2, w3, ...]
+    *  w = u / u0
+    *  u = x - |x|*e0
+    *  u0 = x0 - |x| 
+    *  e0 = [1, 0, 0 , 0, ...]
+    * 
+    *  x - input vector, remains unaffected
+    *  tail - the essential part of the vector w: [w1, w2, w3, ...]
     *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)
     *  coeff - scalar, scaling factor in Householder matrix formula  
     */                       
-    static NDArray<T> evalHHmatrix(NDArray<T>& x, T& coeff, T& normX);
+    static void evalHHmatrixData(const NDArray<T>& x, NDArray<T>& tail, T& coeff, T& normX);
+
+    /**
+    *  this method mathematically multiplies input matrix on Householder from the left P * matrix
+    * 
+    *  x - input matrix
+    *  tail - the essential part of the Householder vector w: [w1, w2, w3, ...]
+    *  coeff - scalar, scaling factor in Householder matrix formula  
+    */                       
+    static void mulLeft(NDArray<T>& matrix, const NDArray<T>& tail, const T coeff);
+
+    /**
+    *  this method mathematically multiplies input matrix on Householder from the right matrix * P
+    * 
+    *  matrix - input matrix
+    *  tail - the essential part of the Householder vector w: [w1, w2, w3, ...]
+    *  coeff - scalar, scaling factor in Householder matrix formula  
+    */                       
+    static void mulRight(NDArray<T>& matrix, const NDArray<T>& tail, const T coeff);
         
 
 
 };
-    // /**
-    // *  this function evaluates data (coeff, normX, tail) used in Householder transformation
-    // *  formula for Householder matrix: P = identity_matrix - coeff * w * w^T
-    // *  P * x = [normX, 0, 0 , 0, ...]
-    // *  coeff - scalar    
-    // *  w = [1, w1, w2, w3, ...], "tail" is w except first unity element, that is "tail" = [w1, w2, w3, ...]
-    // *  w = u / u0
-    // *  u = x - |x|*e0
-    // *  u0 = x0 - |x| 
-    // *  e0 = [1, 0, 0 , 0, ...]
-    // * 
-    // *  x - input vector, remains unaffected
-    // *  tail - output vector with length = x.lengthOf() - 1 and contains all elements of w vector except first one 
-    // *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)  
-    // *  coeff - scalar, scaling factor in Householder matrix formula  
-    // */                  	
-    // template <typename T>
-    // void evalHouseholderData(const NDArray<T>& x, NDArray<T>& tail, T& normX, T& coeff);
-
-
-    // /**
-    // *  this function calculates Householder matrix P = identity_matrix - coeff * w * w^T
-    // *  P * x = [normX, 0, 0 , 0, ...]
-    // *  coeff - scalar    
-    // *  w = [1, w1, w2, w3, ...]
-    // *  w = u / u0
-    // *  u = x - |x|*e0
-    // *  u0 = x0 - |x| 
-    // *  e0 = [1, 0, 0 , 0, ...]
-    // * 
-    // *  x - input vector, remains unaffected
-    // *  normX - this scalar is the first non-zero element in vector resulting from Householder transformation -> (P*x)
-    // */                  	
-    // template <typename T>
-    // NDArray<T> evalHHmatrix(const NDArray<T>& x, T& normX);
 
     
     // /**

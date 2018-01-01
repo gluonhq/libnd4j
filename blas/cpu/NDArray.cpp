@@ -2483,7 +2483,6 @@ NDArray<T> NDArray<T>::operator+(const NDArray<T>& other) const {
     }    
     
     ////////////////////////////////////////////////////////////////////////
-    // addition operator array1 += array2
     template<typename T>
     void NDArray<T>::operator+=(const NDArray<T>& other) {    
 
@@ -2493,6 +2492,14 @@ NDArray<T> NDArray<T>::operator+(const NDArray<T>& other) const {
             *this = this->template applyTrueBroadcast<simdOps::Add<T>>(other);
     }
 
+    template<typename T>
+    void NDArray<T>::operator-=(const NDArray<T>& other) {    
+
+        if (other.lengthOf() == lengthOf())
+            functions::pairwise_transforms::PairWiseTransform<T>::template exec<simdOps::Subtract<T>>(this->_buffer, this->_shapeInfo, other._buffer, other._shapeInfo, this->_buffer, this->_shapeInfo, nullptr);
+        else
+            *this = this->template applyTrueBroadcast<simdOps::Subtract<T>>(other);
+    }
 
     template<typename T>
     void NDArray<T>::operator+=(const T other) {

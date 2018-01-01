@@ -38,60 +38,48 @@ void BiDiagonalUp<T>::evalData() {
 	if(rows < cols)
 		throw "ops::helpers::BiDiagonalizeUp::evalData method: this procedure is applicable only for input matrix with rows >= cols !";
 		
-	NDArray<T>* bottomRightCorner(nullptr), *column(nullptr), *row(nullptr);
+	NDArray<T>* bottomRightCorner(nullptr), *column(nullptr), *row(nullptr), *tail(nullptr);	
 	T coeff, normX;
 	for(int i = 0; i < cols-1; ++i ) {
 
 		// evaluate Householder matrix nullifying columns 		
-		column = _HHmatrix.subarray({{i, rows}, {i, i+1}});						
-		NDArray<T> Pcols = Householder<T>::evalHHmatrix(*column, coeff, normX);		
-		_HHmatrix(i,i) = coeff;
-		_HHbidiag(i,i) = normX;		
-		// multiply given matrix block on householder matrix from the left: Pcols * bottomRightCorner		
+		column = _HHmatrix.subarray({{i,   rows}, {i, i+1}});						
+		tail   = _HHmatrix.subarray({{i+1, rows}, {i, i+1}});
+		Householder<T>::evalHHmatrixData(*column, *tail, _HHmatrix(i,i), _HHbidiag(i,i)); 
+		// multiply corresponding matrix block on householder matrix from the left: P * bottomRightCorner		
 		bottomRightCorner =  _HHmatrix.subarray({{i, rows}, {i+1, cols}});	// {i, cols}				
-		NDArray<T> temp1 = *bottomRightCorner;
-		
-		if(!Pcols.isScalar()) {
-			
-			NDArrayFactory<T>::mmulHelper(&Pcols, &temp1, &temp1, (T)1., (T)0.);								
-			bottomRightCorner->assign(&temp1);
-		}
-		else
-			*bottomRightCorner *= Pcols(0);			
+		Householder<T>::mulLeft(*bottomRightCorner, *tail, _HHmatrix(i,i));
+
+		delete bottomRightCorner;
+		delete column;
+		delete tail;
+
 		
 		if(i == cols-2) {
 			
-			_HHbidiag(i,i+1)   = (*bottomRightCorner)(0);
-			_HHbidiag(i+1,i+1) = (*bottomRightCorner)(1);			
-			_HHmatrix(i,i+1)   = (T).0;
-			_HHmatrix(i+1,i+1) = (T).0;						
-			delete bottomRightCorner;
-			delete column;
+		// 	_HHbidiag(i,i+1)   = (*bottomRightCorner)(0);
+		// 	_HHbidiag(i+1,i+1) = (*bottomRightCorner)(1);			
+		// 	_HHmatrix(i,i+1)   = (T).0;
+		// 	_HHmatrix(i+1,i+1) = (T).0;						
+		// 	delete bottomRightCorner;
+		// 	delete column;
+		// 	delete tail;
 			continue; 							// do not apply right multiplying at last iteration
 		}
 		
-		delete bottomRightCorner;
-		delete column;
 		
 		// evaluate Householder matrix nullifying rows 
-		row = _HHmatrix.subarray({{i, i+1}, {i+1, cols}});
-		NDArray<T> Prows = Householder<T>::evalHHmatrix(*row, coeff, normX);		
-		_HHmatrix(i,i+1) = coeff;
-		_HHbidiag(i,i+1) = normX;
-		// multiply given matrix block on householder matrix from the right: bottomRightCorner * Prols
+		row  = _HHmatrix.subarray({{i, i+1}, {i+1, cols}});
+		tail = _HHmatrix.subarray({{i, i+1}, {i+2, cols}});
+		Householder<T>::evalHHmatrixData(*row, *tail, _HHmatrix(i,i+1), _HHbidiag(i,i+1));
+		// multiply corresponding matrix block on householder matrix from the right: bottomRightCorner * P
 		bottomRightCorner = _HHmatrix.subarray({{i+1, rows}, {i+1, cols}});  // {i, rows}
-		NDArray<T> temp2 = *bottomRightCorner;
-		
-		if(!Prows.isScalar()) {
-			
-			NDArrayFactory<T>::mmulHelper(&temp2, &Prows, &temp2, (T)1., (T)0.);
-			bottomRightCorner->assign(&temp2);
-		}
-		else
-			*bottomRightCorner *= Prows(0);			
+		Householder<T>::mulRight(*bottomRightCorner, *tail, _HHmatrix(i,i+1));
+				
 		
 		delete bottomRightCorner;
 		delete row;
+		delete tail;
 	}	
 }
 
