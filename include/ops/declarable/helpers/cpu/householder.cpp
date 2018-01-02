@@ -59,7 +59,7 @@ void Householder<T>::evalHHmatrixData(const NDArray<T>& x, NDArray<T>& tail, T& 
 	if(!x.isVector() && !x.isScalar())
 		throw "ops::helpers::Householder::evalHHmatrixData method: input array must be vector or scalar!";
 
-	if(x.lengthOf() != tail.lengthOf() + 1 && !x.isScalar())
+	if(!x.isScalar() && x.lengthOf() != tail.lengthOf() + 1)
 		throw "ops::helpers::Householder::evalHHmatrixData method: input tail vector must have length less than unity compared to input x vector!";
 
 	normX = x.template reduceNumber<simdOps::Norm2<T>>();	
@@ -67,8 +67,8 @@ void Householder<T>::evalHHmatrixData(const NDArray<T>& x, NDArray<T>& tail, T& 
 		
 	if(normX*normX - x(0)*x(0) <= min) {
 
-		coeff = (T)0.;
-		normX = x(0); 
+		normX = x(0);
+		coeff = (T)0.;		
 		tail = (T)0.;		
 	}
 	else {
@@ -91,25 +91,25 @@ template <typename T>
 void Householder<T>::mulLeft(NDArray<T>& matrix, const NDArray<T>& tail, const T coeff) {
 	
 	if(matrix.rankOf() != 2)
-		throw "ops::helpers::Householder::mulLeft method: input array must be 2D matrix !";
-
-	NDArray<T> *pCol(nullptr), *pRow(nullptr);
-
-	if(tail.isColumnVector()) {
-
-		pCol = const_cast<NDArray<T>*>(&tail);
-		pRow = tail.transpose();
-	}
-	else {
-
-		pRow = const_cast<NDArray<T>*>(&tail);
-		pCol = tail.transpose();
-	}
+		throw "ops::helpers::Householder::mulLeft method: input array must be 2D matrix !";	
 
 	if(matrix.sizeAt(0) == 1)   
     	matrix *= (T)1. - coeff;
   	
   	else {
+
+  		NDArray<T> *pCol(nullptr), *pRow(nullptr);
+
+		if(tail.isColumnVector()) {
+
+			pCol = const_cast<NDArray<T>*>(&tail);
+			pRow = tail.transpose();
+		}
+		else {
+
+			pRow = const_cast<NDArray<T>*>(&tail);
+			pCol = tail.transpose();
+		}
     	    	
     	NDArray<T>* bottomPart =  matrix.subarray({{1, matrix.sizeAt(0)}, {}});
     	NDArray<T> temp = *bottomPart;
@@ -134,24 +134,24 @@ void Householder<T>::mulRight(NDArray<T>& matrix, const NDArray<T>& tail, const 
 
 	if(matrix.rankOf() != 2)
 		throw "ops::helpers::Householder::mulRight method: input array must be 2D matrix !";
-
-	NDArray<T> *pCol(nullptr), *pRow(nullptr);
-
-	if(tail.isColumnVector()) {
-
-		pCol = const_cast<NDArray<T>*>(&tail);
-		pRow = tail.transpose();
-	}
-	else {
-
-		pRow = const_cast<NDArray<T>*>(&tail);
-		pCol = tail.transpose();
-	}
 	
 	if(matrix.sizeAt(1) == 1)   
     	matrix *= (T)1. - coeff;
   	
   	else {
+
+  		NDArray<T> *pCol(nullptr), *pRow(nullptr);
+
+		if(tail.isColumnVector()) {
+
+			pCol = const_cast<NDArray<T>*>(&tail);
+			pRow = tail.transpose();
+		}
+		else {
+
+			pRow = const_cast<NDArray<T>*>(&tail);
+			pCol = tail.transpose();
+		}	
     	    	
     	NDArray<T>* rightPart =  matrix.subarray({{}, {1, matrix.sizeAt(1)}});
     	NDArray<T> temp = *rightPart;

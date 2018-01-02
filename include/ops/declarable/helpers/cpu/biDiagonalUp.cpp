@@ -39,7 +39,8 @@ void BiDiagonalUp<T>::evalData() {
 		throw "ops::helpers::BiDiagonalizeUp::evalData method: this procedure is applicable only for input matrix with rows >= cols !";
 		
 	NDArray<T>* bottomRightCorner(nullptr), *column(nullptr), *row(nullptr), *tail(nullptr);	
-	T coeff, normX;
+	T coeff, normX;	
+	
 	for(int i = 0; i < cols-1; ++i ) {
 
 		// evaluate Householder matrix nullifying columns 		
@@ -53,21 +54,10 @@ void BiDiagonalUp<T>::evalData() {
 		delete bottomRightCorner;
 		delete column;
 		delete tail;
+		
+		if(i == cols-2)			
+			continue; 										// do not apply right multiplying at last iteration		
 
-		
-		if(i == cols-2) {
-			
-		// 	_HHbidiag(i,i+1)   = (*bottomRightCorner)(0);
-		// 	_HHbidiag(i+1,i+1) = (*bottomRightCorner)(1);			
-		// 	_HHmatrix(i,i+1)   = (T).0;
-		// 	_HHmatrix(i+1,i+1) = (T).0;						
-		// 	delete bottomRightCorner;
-		// 	delete column;
-		// 	delete tail;
-			continue; 							// do not apply right multiplying at last iteration
-		}
-		
-		
 		// evaluate Householder matrix nullifying rows 
 		row  = _HHmatrix.subarray({{i, i+1}, {i+1, cols}});
 		tail = _HHmatrix.subarray({{i, i+1}, {i+2, cols}});
@@ -75,12 +65,27 @@ void BiDiagonalUp<T>::evalData() {
 		// multiply corresponding matrix block on householder matrix from the right: bottomRightCorner * P
 		bottomRightCorner = _HHmatrix.subarray({{i+1, rows}, {i+1, cols}});  // {i, rows}
 		Householder<T>::mulRight(*bottomRightCorner, *tail, _HHmatrix(i,i+1));
-				
-		
+						
 		delete bottomRightCorner;
 		delete row;
 		delete tail;
 	}	
+
+	row  = _HHmatrix.subarray({{cols-2, cols-1}, {cols-1, cols}});	
+	Householder<T>::evalHHmatrixData(*row, *row, _HHmatrix(cols-2,cols-1), _HHbidiag(cols-2,cols-1)); 
+	delete row;	
+
+	column = _HHmatrix.subarray({{cols-1, rows}, {cols-1, cols}});
+	if(rows == cols)
+		tail = _HHmatrix.subarray({{cols-1, rows}, {cols-1, cols}});	
+	else
+		tail = _HHmatrix.subarray({{cols, rows}, {cols-1, cols}});
+	Householder<T>::evalHHmatrixData(*column, *tail, _HHmatrix(cols-1,cols-1), _HHbidiag(cols-1,cols-1)); 
+	delete column;
+	delete tail;
+
+
+
 }
 
 
